@@ -155,7 +155,7 @@ db_tokens = ['<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]',
 
 special_tokens = ['<pad>', '<go_r>', '<unk>', '<go_b>', '<go_a>',
                             '<eos_u>', '<eos_r>', '<eos_b>', '<eos_a>', '<go_d>','<eos_d>',
-                            '<sos_u>', '<sos_r>', '<sos_b>', '<sos_a>', '<sos_d>'] + db_tokens
+                            '<sos_u>', '<sos_r>', '<sos_b>', '<sos_a>', '<sos_d>', '<sos_t>', '<eos_t>'] + db_tokens
 
 eos_tokens = {
     'user': '<eos_u>', 'user_delex': '<eos_u>',
