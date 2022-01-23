@@ -439,7 +439,7 @@ class Modal(object):
                             db = turn['db']
                         else:
                             db_result = self.reader.bspan_to_DBpointer(self.tokenizer.decode(bspn_gen), turn['turn_domain'])
-                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>')) + self.tokenizer.encode(['<sos_a>'])
+                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + turn_idx + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
                         inputs['context_tensor_db'] = torch.tensor([inputs['context'][:-1] + bspn_gen + db]).to(self.device)
                         context_length = len(inputs['context_tensor_db'][0])
                         outputs_db = self.model.generate(input_ids=inputs['context_tensor_db'],
@@ -557,7 +557,7 @@ class Modal(object):
                             db = turn['db']
                         else:
                             db_result = self.reader.bspan_to_DBpointer(self.tokenizer.decode(bspn_gen), turn['turn_domain'])
-                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>')) + self.tokenizer.encode(['<sos_a>'])
+                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + turn_idx + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
                         inputs['context_tensor_db'] = torch.tensor([inputs['context'][:-1] + bspn_gen + db]).to(self.device)
                         context_length = len(inputs['context_tensor_db'][0])
                         outputs_db = self.model.generate(input_ids=inputs['context_tensor_db'],
