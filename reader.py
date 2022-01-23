@@ -604,7 +604,7 @@ class MultiWozReader(_ReaderBase):
             # db_tokens = ['<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]', '[db_3]']
             enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
                 '<sos_db> ' +
-                db_pointer + ' <eos_db>'))
+                db_pointer + ' <eos_db>' + ' <sos_t> ' + t['turn_num'] + ' <eos_t>'))
 
             encoded_dial.append(enc)
         return encoded_dial
