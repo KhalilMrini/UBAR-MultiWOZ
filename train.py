@@ -396,6 +396,7 @@ class Modal(object):
             for dial_idx, dialog in enumerate(eval_pbar):
 
                 pv_turn = {}
+                dialog_len = len(dialog)
                 for turn_idx, turn in enumerate(dialog):
                     first_turn = (turn_idx == 0)
                     inputs = self.reader.convert_turn_eval_URURU(
@@ -439,7 +440,7 @@ class Modal(object):
                             db = turn['db']
                         else:
                             db_result = self.reader.bspan_to_DBpointer(self.tokenizer.decode(bspn_gen), turn['turn_domain'])
-                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + turn_idx + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
+                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + str(dialog_len - turn_idx) + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
                         inputs['context_tensor_db'] = torch.tensor([inputs['context'][:-1] + bspn_gen + db]).to(self.device)
                         context_length = len(inputs['context_tensor_db'][0])
                         outputs_db = self.model.generate(input_ids=inputs['context_tensor_db'],
@@ -514,6 +515,7 @@ class Modal(object):
             for dial_idx, dialog in enumerate(eval_data):
 
                 pv_turn = {}
+                dialog_len = len(dialog)
                 for turn_idx, turn in enumerate(dialog):
                     first_turn = (turn_idx == 0)
                     inputs = self.reader.convert_turn_eval(
@@ -557,7 +559,7 @@ class Modal(object):
                             db = turn['db']
                         else:
                             db_result = self.reader.bspan_to_DBpointer(self.tokenizer.decode(bspn_gen), turn['turn_domain'])
-                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + turn_idx + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
+                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + str(dialog_len - turn_idx) + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
                         inputs['context_tensor_db'] = torch.tensor([inputs['context'][:-1] + bspn_gen + db]).to(self.device)
                         context_length = len(inputs['context_tensor_db'][0])
                         outputs_db = self.model.generate(input_ids=inputs['context_tensor_db'],
