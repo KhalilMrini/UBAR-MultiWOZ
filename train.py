@@ -426,6 +426,8 @@ class Modal(object):
                             logging.info(str(exception))
                             logging.info(self.tokenizer.decode(generated))
                             decoded = {'resp': [], 'bspn': [], 'aspn': []}
+                            if cfg.predict_turn_number:
+                                decoded['tspn'] = []
 
                     else: # predict bspn, access db, then generate act and resp
                         outputs = self.model.generate(input_ids=inputs['context_tensor'],
@@ -458,6 +460,8 @@ class Modal(object):
                     
                     turn['resp_gen'] = decoded['resp']
                     turn['bspn_gen'] = turn['bspn'] if cfg.use_true_curr_bspn else decoded['bspn']
+                    if cfg.predict_turn_number:
+                        turn['tspn_gen'] = decoded['tspn']
                     turn['aspn_gen'] = turn['aspn'] if cfg.use_true_curr_aspn else decoded['aspn']
                     turn['dspn_gen'] = turn['dspn']
 
@@ -559,7 +563,10 @@ class Modal(object):
                             db = turn['db']
                         else:
                             db_result = self.reader.bspan_to_DBpointer(self.tokenizer.decode(bspn_gen), turn['turn_domain'])
-                            db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + str(dialog_len - turn_idx) + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
+                            if cfg.use_true_curr_tspn:
+                                db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + str(dialog_len - turn_idx) + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
+                            else:
+                                db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>') + self.tokenizer.encode(['<sos_a>'])
                         inputs['context_tensor_db'] = torch.tensor([inputs['context'][:-1] + bspn_gen + db]).to(self.device)
                         context_length = len(inputs['context_tensor_db'][0])
                         outputs_db = self.model.generate(input_ids=inputs['context_tensor_db'],
@@ -577,6 +584,7 @@ class Modal(object):
                     
                     turn['resp_gen'] = decoded['resp']
                     turn['bspn_gen'] = turn['bspn'] if cfg.use_true_curr_bspn else decoded['bspn']
+                    turn['tspn_gen'] = turn['tspn'] if cfg.use_true_curr_tspn else decoded['tspn']
                     turn['aspn_gen'] = turn['aspn'] if cfg.use_true_curr_aspn else decoded['aspn']
                     turn['dspn_gen'] = turn['dspn']
 
@@ -591,7 +599,6 @@ class Modal(object):
                     pv_turn['resp'] = turn['resp'] if cfg.use_true_prev_resp else decoded['resp']
                     pv_turn['bspn'] = turn['bspn'] if cfg.use_true_prev_bspn else decoded['bspn']
                     pv_turn['db'] = turn['db'] if cfg.use_true_curr_bspn else db
-                    pv_turn['aspn'] = turn['aspn'] if cfg.use_true_prev_aspn else decoded['aspn']
 
                 result_collection.update(
                     self.reader.inverse_transpose_turn(dialog))
@@ -638,6 +645,8 @@ class Modal(object):
         return decoded['resp'] ('bspn', 'aspn')
         """
         decoded = {}
+        if cfg.predict_turn_number:
+            eos_t_id = self.tokenizer.encode(['<eos_t>'])[0]
         eos_a_id = self.tokenizer.encode(['<eos_a>'])[0]
         eos_r_id = self.tokenizer.encode(['<eos_r>'])[0]
         eos_b_id = self.tokenizer.encode(['<eos_b>'])[0]
@@ -654,7 +663,11 @@ class Modal(object):
             decoded['resp'] = generated[: eos_r_idx+1]
         else:  # predicted aspn, resp
             eos_a_idx = generated.index(eos_a_id)
-            decoded['aspn'] = generated[: eos_a_idx+1]
+            aspn_start_idx = 0
+            if cfg.predict_turn_number:
+                aspn_start_idx = eos_t_id + 1
+                decoded['tspn'] = generated[: aspn_start_idx]
+            decoded['aspn'] = generated[aspn_start_idx: eos_a_idx+1]
             decoded['resp'] = generated[eos_a_idx+1: eos_r_idx+1]
         # if cfg.use_true_curr_bspn:
             
@@ -768,9 +781,9 @@ def main():
     elif args.mode == 'adjuest':
         pass
     else:  # test
-        logging.info("Generate setting: \n\t use true_prev_bspn={} \n\t use true_prev_aspn={} \n\t use true_db_pointer={} \n\t use true_prev_resp={} \n\t use true_curr_bspn={} \n\t use true_curr_aspn={} \n\t use_all_previous_context={}".format(
+        logging.info("Generate setting: \n\t use true_prev_bspn={} \n\t use true_prev_aspn={} \n\t use true_db_pointer={} \n\t use true_prev_resp={} \n\t use true_curr_bspn={} \n\t use true_curr_tspn={} \n\t use true_curr_aspn={} \n\t use_all_previous_context={}".format(
                             cfg.use_true_prev_bspn, cfg.use_true_prev_aspn, cfg.use_true_db_pointer, cfg.use_true_prev_resp,
-                            cfg.use_true_curr_bspn, cfg.use_true_curr_aspn, cfg.use_all_previous_context
+                            cfg.use_true_curr_bspn, cfg.use_true_curr_tspn, cfg.use_true_curr_aspn, cfg.use_all_previous_context
                         ))
 
         if cfg.context_scheme == 'UBARU':

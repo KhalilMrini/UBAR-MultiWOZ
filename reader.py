@@ -581,6 +581,10 @@ class MultiWozReader(_ReaderBase):
             enc['bsdx'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
                 '<sos_b> ' +
                 t['cons_delex'] + ' <eos_b>'))
+            if cfg.predict_turn_number:
+                enc['tspn'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
+                    '<sos_t> ' +
+                    str(len_dialog - idx) + ' <eos_t>'))
             enc['aspn'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
                 '<sos_a> ' +
                 t['sys_act'] + ' <eos_a>'))
@@ -603,9 +607,13 @@ class MultiWozReader(_ReaderBase):
             # add db results to enc, at every turn
             db_pointer = self.bspan_to_DBpointer(t['constraint'], t['turn_domain'].split())
             # db_tokens = ['<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]', '[db_3]']
-            enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
-                '<sos_db> ' +
-                db_pointer + ' <eos_db>' + ' <sos_t> ' + str(len_dialog - idx) + ' <eos_t>'))
+            if cfg.use_true_curr_tspn:
+                enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
+                    '<sos_db> ' +
+                    db_pointer + ' <eos_db>' + ' <sos_t> ' + str(len_dialog - idx) + ' <eos_t>'))
+            else:
+                enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
+                    '<sos_db> ' + db_pointer + ' <eos_db>'))
 
             encoded_dial.append(enc)
         return encoded_dial

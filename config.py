@@ -72,7 +72,10 @@ class _Config:
 
         self.use_true_curr_bspn = False
         self.use_true_curr_aspn = False
+        self.use_true_curr_tspn = False
         self.use_all_previous_context = True
+
+        self.predict_turn_number = False
 
         self.context_scheme = 'UBARU' # UBARU or URURU
 
