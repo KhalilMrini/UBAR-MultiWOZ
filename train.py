@@ -600,6 +600,8 @@ class Modal(object):
                     pv_turn['resp'] = turn['resp'] if cfg.use_true_prev_resp else decoded['resp']
                     pv_turn['bspn'] = turn['bspn'] if cfg.use_true_prev_bspn else decoded['bspn']
                     pv_turn['db'] = turn['db'] if cfg.use_true_curr_bspn else db
+                    if cfg.use_true_curr_tspn or cfg.predict_turn_number:
+                        pv_turn['tspn'] = turn['tspn'] if cfg.use_true_curr_tspn else decoded['tspn']
                     pv_turn['aspn'] = turn['aspn'] if cfg.use_true_prev_aspn else decoded['aspn']
 
                 result_collection.update(
