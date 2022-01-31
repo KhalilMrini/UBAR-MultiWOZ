@@ -766,8 +766,11 @@ class MultiWozReader(_ReaderBase):
             context = []
             for c in context_list:
                 context += turn[c]
-
-            pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['aspn'] + pv_turn['resp']
+            
+            if cfg.predict_turn_number or cfg.use_true_curr_tspn:
+                pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['tspn'] + pv_turn['aspn'] + pv_turn['resp']
+            else:
+                pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['aspn'] + pv_turn['resp']
             # e43 with BABAU
             # pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['aspn']
                 
