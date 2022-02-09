@@ -460,8 +460,8 @@ class Modal(object):
                     
                     turn['resp_gen'] = decoded['resp']
                     turn['bspn_gen'] = turn['bspn'] if cfg.use_true_curr_bspn else decoded['bspn']
-                    if (cfg.predict_turn_number or (cfg.turn_number_threshold is not None and turn_idx == dialog_len - cfg.turn_number_threshold)) or cfg.use_true_curr_tspn:
-                        turn['tspn_gen'] = turn['tspn'] if cfg.use_true_curr_tspn or (cfg.turn_number_threshold is not None and turn_idx == dialog_len - cfg.turn_number_threshold) else decoded['tspn']
+                    if (cfg.predict_turn_number or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold)) or cfg.use_true_curr_tspn:
+                        turn['tspn_gen'] = turn['tspn'] if cfg.use_true_curr_tspn or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold) else decoded['tspn']
                     turn['aspn_gen'] = turn['aspn'] if cfg.use_true_curr_aspn else decoded['aspn']
                     turn['dspn_gen'] = turn['dspn']
 
@@ -563,7 +563,7 @@ class Modal(object):
                             db = turn['db']
                         else:
                             db_result = self.reader.bspan_to_DBpointer(self.tokenizer.decode(bspn_gen), turn['turn_domain'])
-                            if cfg.use_true_curr_tspn or (cfg.turn_number_threshold is not None and turn_idx == dialog_len - cfg.turn_number_threshold):
+                            if cfg.use_true_curr_tspn or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold):
                                 db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>' + ' <sos_t> ' + str(round(float(dialog_len - turn_idx)/float(dialog_len),2)) + ' <eos_t>')) + self.tokenizer.encode(['<sos_a>'])
                             else:
                                 db = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize('<sos_db> '+ db_result + ' <eos_db>')) + self.tokenizer.encode(['<sos_a>'])
@@ -584,8 +584,8 @@ class Modal(object):
                     
                     turn['resp_gen'] = decoded['resp']
                     turn['bspn_gen'] = turn['bspn'] if cfg.use_true_curr_bspn else decoded['bspn']
-                    if cfg.use_true_curr_tspn or cfg.predict_turn_number or (cfg.turn_number_threshold is not None and turn_idx == dialog_len - cfg.turn_number_threshold):
-                        turn['tspn_gen'] = turn['tspn'] if cfg.use_true_curr_tspn or (cfg.turn_number_threshold is not None and turn_idx == dialog_len - cfg.turn_number_threshold) else decoded['tspn']
+                    if cfg.use_true_curr_tspn or cfg.predict_turn_number or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold):
+                        turn['tspn_gen'] = turn['tspn'] if cfg.use_true_curr_tspn or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold) else decoded['tspn']
                     turn['aspn_gen'] = turn['aspn'] if cfg.use_true_curr_aspn else decoded['aspn']
                     turn['dspn_gen'] = turn['dspn']
 
@@ -600,8 +600,8 @@ class Modal(object):
                     pv_turn['resp'] = turn['resp'] if cfg.use_true_prev_resp else decoded['resp']
                     pv_turn['bspn'] = turn['bspn'] if cfg.use_true_prev_bspn else decoded['bspn']
                     pv_turn['db'] = turn['db'] if cfg.use_true_curr_bspn else db
-                    if cfg.use_true_curr_tspn or cfg.predict_turn_number or (cfg.turn_number_threshold is not None and turn_idx == dialog_len - cfg.turn_number_threshold):
-                        pv_turn['tspn'] = turn['tspn'] if cfg.use_true_curr_tspn or (cfg.turn_number_threshold is not None and turn_idx == dialog_len - cfg.turn_number_threshold) else decoded['tspn']
+                    if cfg.use_true_curr_tspn or cfg.predict_turn_number or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold):
+                        pv_turn['tspn'] = turn['tspn'] if cfg.use_true_curr_tspn or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold) else decoded['tspn']
                     pv_turn['aspn'] = turn['aspn'] if cfg.use_true_prev_aspn else decoded['aspn']
 
                 result_collection.update(

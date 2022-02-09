@@ -607,7 +607,7 @@ class MultiWozReader(_ReaderBase):
             # add db results to enc, at every turn
             db_pointer = self.bspan_to_DBpointer(t['constraint'], t['turn_domain'].split())
             # db_tokens = ['<sos_db>', '<eos_db>', '[db_nores]', '[db_0]', '[db_1]', '[db_2]', '[db_3]']
-            if cfg.use_true_curr_tspn or (cfg.turn_number_threshold is not None and idx == len_dialog - cfg.turn_number_threshold):
+            if cfg.use_true_curr_tspn or (cfg.turn_number_threshold > 0 and idx == len_dialog - cfg.turn_number_threshold):
                 enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
                     '<sos_db> ' +
                     db_pointer + ' <eos_db>' + ' <sos_t> ' + str(round(float(len_dialog - idx)/float(len_dialog),2)) + ' <eos_t>'))
@@ -767,7 +767,7 @@ class MultiWozReader(_ReaderBase):
             for c in context_list:
                 context += turn[c]
             
-            if cfg.predict_turn_number or cfg.use_true_curr_tspn or ('tspn' in pv_turn and cfg.turn_number_threshold is not None):
+            if cfg.predict_turn_number or cfg.use_true_curr_tspn or ('tspn' in pv_turn and cfg.turn_number_threshold > 0):
                 pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['tspn'] + pv_turn['aspn'] + pv_turn['resp']
             else:
                 pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['aspn'] + pv_turn['resp']
