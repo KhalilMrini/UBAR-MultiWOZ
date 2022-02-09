@@ -76,6 +76,7 @@ class _Config:
         self.use_all_previous_context = True
 
         self.predict_turn_number = False
+        self.turn_number_threshold = None
 
         self.context_scheme = 'UBARU' # UBARU or URURU
 
