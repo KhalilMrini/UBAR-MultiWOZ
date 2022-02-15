@@ -584,8 +584,10 @@ class Modal(object):
                     
                     turn['resp_gen'] = decoded['resp']
                     turn['bspn_gen'] = turn['bspn'] if cfg.use_true_curr_bspn else decoded['bspn']
-                    if cfg.use_true_curr_tspn or cfg.predict_turn_number or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold):
-                        turn['tspn_gen'] = turn['tspn'] if cfg.use_true_curr_tspn or (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold) else decoded['tspn']
+                    if cfg.use_true_curr_tspn or cfg.predict_turn_number:
+                        turn['tspn_gen'] = turn['tspn'] if cfg.use_true_curr_tspn else decoded['tspn']
+                    if (cfg.turn_number_threshold > 0 and turn_idx == dialog_len - cfg.turn_number_threshold):
+                        turn['tspn_gen'] = '<sos_t> 1 <eos_t>'
                     turn['aspn_gen'] = turn['aspn'] if cfg.use_true_curr_aspn else decoded['aspn']
                     turn['dspn_gen'] = turn['dspn']
 
