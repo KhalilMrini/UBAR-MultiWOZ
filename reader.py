@@ -611,6 +611,15 @@ class MultiWozReader(_ReaderBase):
                 enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
                     '<sos_db> ' +
                     db_pointer + ' <eos_db>' + ' <sos_t> ' + str(round(float(len_dialog - idx)/float(len_dialog),2)) + ' <eos_t>'))
+            elif cfg.random_turn_number_threshold > 0:
+                if cfg.random_turn_number_threshold < len_dialog - idx:
+                    enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
+                        '<sos_db> ' +
+                        db_pointer + ' <eos_db>' + ' <sos_t> ' + str(round(np.random.uniform(),2)) + ' <eos_t>'))
+                else:
+                    enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
+                        '<sos_db> ' +
+                        db_pointer + ' <eos_db>' + ' <sos_t> ' + str(round(float(len_dialog - idx)/float(len_dialog),2)) + ' <eos_t>'))
             else:
                 enc['db'] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(
                     '<sos_db> ' + db_pointer + ' <eos_db>'))
@@ -767,7 +776,7 @@ class MultiWozReader(_ReaderBase):
             for c in context_list:
                 context += turn[c]
             
-            if cfg.predict_turn_number or cfg.use_true_curr_tspn or ('tspn' in pv_turn and cfg.turn_number_threshold > 0):
+            if cfg.predict_turn_number or cfg.use_true_curr_tspn or ('tspn' in pv_turn and cfg.turn_number_threshold > 0) or cfg.random_turn_number_threshold > 0:
                 pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['tspn'] + pv_turn['aspn'] + pv_turn['resp']
             else:
                 pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['aspn'] + pv_turn['resp']
