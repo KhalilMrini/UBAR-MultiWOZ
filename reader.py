@@ -776,7 +776,7 @@ class MultiWozReader(_ReaderBase):
             for c in context_list:
                 context += turn[c]
             
-            if cfg.predict_turn_number or cfg.use_true_curr_tspn or ('tspn' in pv_turn and cfg.turn_number_threshold > 0) or cfg.random_turn_number_threshold > 0:
+            if cfg.predict_turn_number or cfg.use_true_curr_tspn or ('tspn' in pv_turn and cfg.turn_number_threshold > 0):
                 pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['tspn'] + pv_turn['aspn'] + pv_turn['resp']
             else:
                 pv_context = pv_turn['labels'] + pv_turn['bspn'] + pv_turn['db'] + pv_turn['aspn'] + pv_turn['resp']
