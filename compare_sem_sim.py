@@ -12,7 +12,7 @@ tokenizer = GPT2Tokenizer.from_pretrained(cfg.gpt_path)
 reader = MultiWozReader(tokenizer)
 model = GPT2LMHeadModel.from_pretrained(cfg.gpt_path).cuda()
 
-all_batches = reader.get_batches('train')
+all_batches = reader.get_batches('test')
 data_iterator = reader.get_nontranspose_data_iterator(all_batches)
 
 this_dict = dict()
@@ -38,6 +38,6 @@ for batch_idx, dial_batch in tqdm(enumerate(data_iterator)):
 
 for turn in range(smallest_idx, 1):
     if turn in this_dict:
-        print(turn, np.mean(this_dict[turn]))
+        print(turn, torch.mean(torch.tensor(this_dict[turn])))
 
             
