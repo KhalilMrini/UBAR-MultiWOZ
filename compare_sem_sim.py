@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 tokenizer = GPT2Tokenizer.from_pretrained(cfg.gpt_path)
 reader = MultiWozReader(tokenizer)
-model = GPT2LMHeadModel.from_pretrained(cfg.gpt_path)
+model = GPT2LMHeadModel.from_pretrained(cfg.gpt_path).cuda()
 
 all_batches = reader.get_batches('train')
 data_iterator = reader.get_nontranspose_data_iterator(all_batches)
