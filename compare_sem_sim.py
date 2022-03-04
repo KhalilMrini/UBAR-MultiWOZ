@@ -12,7 +12,7 @@ tokenizer = GPT2Tokenizer.from_pretrained(cfg.gpt_path)
 reader = MultiWozReader(tokenizer)
 model = GPT2LMHeadModel.from_pretrained(cfg.gpt_path).cuda()
 
-all_batches = reader.get_batches('test')
+all_batches = reader.get_batches('train')
 data_iterator = reader.get_nontranspose_data_iterator(all_batches)
 
 this_dict = dict()
@@ -26,7 +26,7 @@ for batch_idx, dial_batch in tqdm(enumerate(data_iterator)):
             if smallest_idx is None or this_turn_idx < smallest_idx:
                 smallest_idx = this_turn_idx
             with torch.no_grad():
-                usr_vec = model(torch.tensor(turn_text['user'])[6:-6].cuda())[0]
+                usr_vec = model(torch.tensor(turn_text['user'][6:-6]).cuda())[0]
                 resp_vec = model(torch.tensor(turn_text['resp'][6:-6]).cuda())[0]
                 cos_sim = cosine_similarity(usr_vec.unsqueeze(-1), resp_vec.transpose(0,1).unsqueeze(0), dim=1)
                 rbert = cos_sim.max(dim=1)[0].mean()
