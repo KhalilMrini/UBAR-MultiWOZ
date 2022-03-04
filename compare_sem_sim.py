@@ -6,6 +6,7 @@ from config import global_config as cfg
 import torch
 from torch.nn.functional import cosine_similarity
 from tqdm import tqdm
+import numpy as np
 
 tokenizer = GPT2Tokenizer.from_pretrained(cfg.gpt_path)
 reader = MultiWozReader(tokenizer)
@@ -37,6 +38,6 @@ for batch_idx, dial_batch in tqdm(enumerate(data_iterator)):
 
 for turn in range(smallest_idx, 1):
     if turn in this_dict:
-        print(turn, this_dict[turn].mean())
+        print(turn, np.mean(this_dict[turn]))
 
             
